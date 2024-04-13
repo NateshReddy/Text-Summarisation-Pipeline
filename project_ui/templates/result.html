@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Result Page</title>
+    <style>
+        .container {
+            display: flex;
+            justify-content: space-around;
+        }
+        .card {
+            width: 45%;
+            height: 300px;
+            border: 1px solid #ddd;
+            overflow-y: auto;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+        .button-container {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <ul>
+                {% for article in articles %}
+                    <li>
+                        <a href="#" onclick="getSummary('{{ article.url }}')">{{ article.title }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="card" id="article-summary">
+            <!-- Article summary will be displayed here -->
+        </div>
+        <div class="button-container">
+            <button onclick="submitResponse('yes')">Yes</button>
+            <button onclick="submitResponse('no')">No</button>
+        </div>
+    </div>
+
+    <script>
+        function getSummary(articleUrl) {
+            fetch('/get_summary', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ url: articleUrl })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display the generated summary
+                document.getElementById('article-summary').innerText = data.summary;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        let currentArticleContent = '';  // Variable to store the current article content
+
+        // Function to update content variable
+        function updateCurrentArticle(articleContent) {
+            currentArticleContent = articleContent;
+        }
+
+        // Function to submit the response
+        function submitResponse(userResponse) {
+            const data = {
+                article_content: currentArticleContent,
+                user_response: userResponse
+            };
+
+            fetch('/save_response', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Response saved:', data.message);
+                // Additional actions after saving the response (e.g., reset UI)
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+
+    </script>
+</body>
+</html>
