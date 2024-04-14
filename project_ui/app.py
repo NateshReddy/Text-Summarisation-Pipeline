@@ -5,7 +5,9 @@ client = OpenAI(api_key= "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")
 # import prompt as pr
 import json
 from bs4 import BeautifulSoup
+import boto3
 
+db = boto3.client('dynamodb', region_name = 'us-east-2')
 app = Flask(__name__)
 article_content = ''
 article_summary = ''
@@ -58,21 +60,15 @@ def submit():
 def get_summary():
     data = request.json
     article_url = data['url']
-    print(article_url)
+    # print(article_url)
     content = scrape_article_content(article_url)
     # Pass content to gpt and fetch summary
     summary = get_completion(content)
     return jsonify({'summary': summary})
 
 def get_completion(news_content, model="gpt-3.5-turbo"):
-
-    # messages = [{"role": "system", "content": "You will be provided with news content and you are expected to provide consize, correct and brief summary about the same."},{"role": "user", "content": news_content}]
-    # response = client.chat.completions.create(
-    #     model=model,
-    #     messages=messages,
-    # )
     global article_content, article_summary
-    print(news_content)
+    # print(news_content)
     article_content = news_content
     data ={'data':news_content}
     # Convert the data to a JSON string
@@ -99,16 +95,12 @@ def get_completion(news_content, model="gpt-3.5-turbo"):
 @app.route('/save_response', methods=['POST'])
 def save_response():
     global article_content, article_summary
-    data = request.json
-    user_response = data['user_response']
-    file_path = 'responses.txt'
-    
-    try:
-        with open(file_path, 'a') as file:
-            file.write(f"Content: {article_content}\nSummary: {article_summary}\nUser Response: {user_response}\n\n")
-    except IOError as e:
-        print(f"An error occurred: {e}")
-        return jsonify({'message': 'Failed to save response'}), 500
+
+    item = {
+    'article-input': {'S': str(article_content[:1000])},
+    'summ-result': {'S': str(article_summary)},
+    }
+    response2 = db.put_item(TableName='news-summarisation-data', Item=item)
 
     return jsonify({'message': 'Response saved successfully'})
 

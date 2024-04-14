@@ -1,0 +1,8 @@
+pandas
+numpy
+Flask
+transformers
+torch
+openai
+bs4
+boto3
