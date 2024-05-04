@@ -4,15 +4,10 @@ from transformers import T5ForConditionalGeneration, AutoTokenizer
 import json
 import re
 import logging
-# # Create a file handler
-# handler = logging.FileHandler('my_log.txt')
-# # Create a logging format
-# formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-# # Add the handler to the logger
-# logger = logging.getLogger(__name__)
-# logger.addHandler(handler)
-# # Set the logging level
-# app.logger.setLevel(logging.INFO)
+import boto3
+
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table("news-summarisation-data")
 
 app = Flask(__name__)
 
@@ -26,13 +21,10 @@ def before_request():
     global model, tokenizer
     app.logger.info('Before request')
     app.logger.info(request.headers)
-    #app.logger.info(request.get_json())
     global model, tokenizer
-    # model = T5ForConditionalGeneration.from_pretrained('neel26d/newstuned_t5_summarizer',cache_dir='./model')
-    # tokenizer = AutoTokenizer.from_pretrained('neel26d/newstuned_t5_summarizer')
 
-    model = T5ForConditionalGeneration.from_pretrained('radhikabansal/t5-base-finetuned-news-summary',cache_dir='./model')
-    tokenizer = AutoTokenizer.from_pretrained('radhikabansal/t5-base-finetuned-news-summary')
+    model = T5ForConditionalGeneration.from_pretrained('google-t5/t5-base',cache_dir='./model')
+    tokenizer = AutoTokenizer.from_pretrained('google-t5/t5-base')
 
     app.logger.info("Model loaded and ready to use")
 
@@ -44,7 +36,12 @@ def predict():
         # Extract data from the request
         data = request.get_json(force=True)
         input_text = data["data"]
-        #inputs = tokenizer("summarization: " + input_text, return_tensors="pt",max_length=512, truncation=True)
+        response = table.get_item(Key={'article-input': input_text[:1000]})
+        
+        if 'Item' in response:
+            print("Response : Item already present in DB")
+            return jsonify(response['Item']['summ-result'])
+        
         inputs = tokenizer("summarization: " + input_text, return_tensors="pt",max_length=512, truncation=True,stride=256,padding="max_length",return_overflowing_tokens=True, return_offsets_mapping=True)
         a,b = inputs['input_ids'].shape
         # Generate prediction
@@ -54,6 +51,8 @@ def predict():
             _ = tokenizer.decode(summary_ids[i], skip_special_tokens=True)
             part_summary.append(remove_tags(_))
         result = ''.join(part_summary)
+
+        
         return jsonify(result)
 
     except Exception as e:
@@ -61,11 +60,5 @@ def predict():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    #global model, tokenizer
-    # Initialize the model
-    #model = pipeline(model="neel26d/newstuned_t5_summarizer")
-    #model = T5ForConditionalGeneration.from_pretrained('neel26d/newstuned_t5_summarizer')
-    #tokenizer = AutoTokenizer.from_pretrained('neel26d/newstuned_t5_summarizer')
-    #app.logger.info("Model loaded and ready to use")
     app.run(debug=True,host='0.0.0.0',port=80)
 
