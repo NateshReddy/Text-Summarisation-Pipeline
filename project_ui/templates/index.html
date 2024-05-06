@@ -1,17 +1,72 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>News Fetcher</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Summarizer</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("{{url_for('static', filename='news-summ.jpg')}}") no-repeat center center fixed;
+            background-size: cover;
+            filter: blur(2px);
+        }
+        .form-container {
+            position: relative;
+            width: 300px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            margin: auto;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: fit-content;
+            position: absolute;
+        }
+        input[type="text"], input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+        input[type="submit"] {
+            color: white;
+            background-color: #4CAF50;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
-    <div style="text-align: center; margin-top: 100px;">
+    <div class="background"></div> <!-- Blurred background container -->
+    <div class="form-container">
+        <h1>News Summarizer</h1>
         <form action="/submit" method="post">
-            <input type="text" name="input_text" placeholder="Enter keywords" style="font-size: 20px; padding: 10px;">
-            <br><br>
-            <input type="submit" value="Fetch Articles">
+            <input type="text" name="input_text" placeholder="Enter news topic keywords">
+            <input type="submit" value="Summarize News">
         </form>
     </div>
-    <div id="content-display"></div>
-
 </body>
 </html>

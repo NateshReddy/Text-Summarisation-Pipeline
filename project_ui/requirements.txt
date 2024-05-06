@@ -1,0 +1,7 @@
+pandas
+numpy
+Flask
+openai
+bs4
+boto3
+requests
