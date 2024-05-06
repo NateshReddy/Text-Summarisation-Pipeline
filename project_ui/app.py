@@ -11,6 +11,7 @@ db = boto3.client('dynamodb', region_name = 'us-east-2')
 app = Flask(__name__)
 article_content = ''
 article_summary = ''
+table_name = "news-summarisation-data"
 
 # URL of your Flask server's endpoint (replace with your actual URL)
 url = "http://127.0.0.1:80/predict"
@@ -100,7 +101,20 @@ def save_response():
     'article-input': {'S': str(article_content[:1000])},
     'summ-result': {'S': str(article_summary)},
     }
-    response2 = db.put_item(TableName='news-summarisation-data', Item=item)
+    try:
+        response = db.describe_table(TableName=table_name)
+        if response['Table']['TableStatus'] == 'ACTIVE':
+            print(f"Table '{table_name}' exists and is active.")
+
+        # Get data for key "xyz"
+            try:
+                response2 = db.put_item(TableName='news-summarisation-data', Item=item)
+            except Exception as e:
+                print(f"Error occurred while putting response in the table': {e}")
+        else:
+            print(f"Table '{table_name}' exists but is not active (status: {response['Table']['TableStatus']}).")
+    except db.exceptions.ResourceNotFoundException:
+        print(f"Table '{table_name}' does not exist.")
 
     return jsonify({'message': 'Response saved successfully'})
 
