@@ -112,7 +112,7 @@ def save_response():
         if response['Table']['TableStatus'] == 'ACTIVE':
             print(f"Table '{table_name}' exists and is active.")
 
-        # Get data for key "xyz"
+        # Put summary in Table
             try:
                 response2 = db.put_item(TableName='news-summarisation-data', Item=item)
             except Exception as e:
