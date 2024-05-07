@@ -1,8 +1,8 @@
-pandas
+# pandas
 numpy
 Flask
 transformers
-torch
+# torch
 openai
 bs4
 boto3

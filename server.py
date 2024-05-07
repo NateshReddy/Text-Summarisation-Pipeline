@@ -6,7 +6,11 @@ import re
 import logging
 import boto3
 
-dynamodb = boto3.resource('dynamodb')
+AWS_S3_CREDS = {
+    "aws_access_key_id":"AKIA47CRUPSSRQF7NCXI",
+    "aws_secret_access_key":"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"
+}
+dynamodb = boto3.resource('dynamodb', region_name = 'us-east-2', **AWS_S3_CREDS)
 table = dynamodb.Table("news-summarisation-data")
 
 app = Flask(__name__)
@@ -60,5 +64,5 @@ def predict():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True,host='0.0.0.0',port=80)
+    app.run(debug=True,host='0.0.0.0',port=8080)
 
