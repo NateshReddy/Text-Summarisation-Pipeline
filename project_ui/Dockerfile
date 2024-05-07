@@ -12,4 +12,8 @@ COPY . "/home/news-summarisation"
 
 RUN pip3 install -r requirements.txt
 
-CMD ["python3", "app.py"]
+COPY app.py ./app.py
+
+ENV FLASK_APP=app.py
+
+CMD ["flask", "run", "--host=0.0.0.0", "-p", "8081"]

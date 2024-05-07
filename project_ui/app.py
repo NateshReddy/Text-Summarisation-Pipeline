@@ -7,14 +7,20 @@ import json
 from bs4 import BeautifulSoup
 import boto3
 
-db = boto3.client('dynamodb', region_name = 'us-east-2')
+AWS_S3_CREDS = {
+    "aws_access_key_id":"AKIA47CRUPSSRQF7NCXI",
+    "aws_secret_access_key":"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"
+}
+
+db = boto3.client('dynamodb', region_name = 'us-east-2', **AWS_S3_CREDS)
 app = Flask(__name__)
 article_content = ''
 article_summary = ''
 table_name = "news-summarisation-data"
 
 # URL of your Flask server's endpoint (replace with your actual URL)
-url = "http://127.0.0.1:80/predict"
+# url = "http://127.0.0.1:8080/predict"
+url = "http://backend-provider:8080/predict"
 
 # Function to fetch news articles from NewsAPI
 def fetch_news_articles(topic):
@@ -119,4 +125,4 @@ def save_response():
     return jsonify({'message': 'Response saved successfully'})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port='8081')
