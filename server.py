@@ -7,8 +7,8 @@ import re
 import boto3
 
 AWS_S3_CREDS = {
-    "aws_access_key_id":"AKIA47CRUPSSRQF7NCXI",
-    "aws_secret_access_key":"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"
+    "aws_access_key_id":"",
+    "aws_secret_access_key":""
 }
 dynamodb = boto3.resource('dynamodb', region_name = 'us-east-2', **AWS_S3_CREDS)
 table = dynamodb.Table("news-summarisation-data")
