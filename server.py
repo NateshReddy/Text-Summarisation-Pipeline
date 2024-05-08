@@ -15,14 +15,14 @@ table = dynamodb.Table("news-summarisation-data")
 
 # print("models are now starting to load")
 
-# model = T5ForConditionalGeneration.from_pretrained('google/t5-efficient-small-el16',cache_dir='./model')
-# tokenizer = AutoTokenizer.from_pretrained('google/t5-efficient-small-el16', cache_dir='./model')
+model = T5ForConditionalGeneration.from_pretrained('google/t5-efficient-small-el16', cache_dir='./model')
+tokenizer = AutoTokenizer.from_pretrained('google/t5-efficient-small-el16', cache_dir='./model')
 
 # model.save_pretrained('model_small/')
 # tokenizer.save_pretrained('model_small/')
 
-model = T5ForConditionalGeneration.from_pretrained('model_small/')
-tokenizer = AutoTokenizer.from_pretrained('model_small/')
+# model = T5ForConditionalGeneration.from_pretrained('model_small/')
+# tokenizer = AutoTokenizer.from_pretrained('model_small/')
 print("models are loaded")
 
 app = Flask(__name__)
@@ -70,8 +70,8 @@ def predict():
         result = ''.join(part_summary)
 
         
-        return jsonify(result)
-        # return jsonify('sometext')
+        # return jsonify(result)
+        return jsonify('sometext')
 
     except Exception as e:
         app.logger.exception(f"Error occurred: {e}")
