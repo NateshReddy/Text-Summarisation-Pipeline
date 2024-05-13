@@ -20,8 +20,9 @@ table_name = "news-summarisation-data"
 
 # URL of your Flask server's endpoint (replace with your actual URL)
 # url = "http://127.0.0.1:8080/predict"
-url = "http://backend-provider:8080/predict"
-
+# url = "http://backend-provider:8080/predict"
+# url = "http://18.189.32.120:80/predict"
+lambda_url = 'https://sanchl6xitkkgxkmr4nxcbn3nm0flslf.lambda-url.us-east-2.on.aws/'
 # Function to fetch news articles from NewsAPI
 def fetch_news_articles(topic):
     api_key = '0e2ef7c699bc4a18a5a3b58714579809'  # Replace with your actual NewsAPI key
@@ -71,6 +72,7 @@ def get_summary():
     content = scrape_article_content(article_url)
     # Pass content to gpt and fetch summary
     summary = get_completion(content)
+    print("heyy,", summary)
     return jsonify({'summary': summary})
 
 def get_completion(news_content, model="gpt-3.5-turbo"):
@@ -85,16 +87,20 @@ def get_completion(news_content, model="gpt-3.5-turbo"):
     headers = {'Content-Type': 'application/json'}
 
     # Send the POST request to the server
-    response = requests.post(url, data=data_json, headers=headers)
-
+    response = requests.post(lambda_url, data=data_json, headers=headers)
+    print(response.text)
+    print(response.status_code)
+    print(type(response))
     # Check if the request was successful
     if response.status_code == 200:
         # Print the response from the server
-        print("Response from server:", response.json())
+        # print("heyyyy")
+        # print()
+        print("Response from server:", response.text)
     else:
         print("Failed to get response. Status code:", response.status_code)
     # print(response.choices[0].message.content)
-    article_summary = response.json()
+    article_summary = response.text
     return article_summary
 
 
