@@ -1,2 +1,3 @@
 # Text-Summarisation-Pipeline
-Code to fine-tune t5-small model and push it to hugging face, and a flask server that can use the deployed model to run our application.
+
+We developed a news summarization web application that enhances user experience by efficiently fetching, summarizing, and displaying news articles. Leveraging the Google T5 model hosted on AWS Elastic Container Registry (ECR) and triggered via AWS Lambda, our solution adeptly handles the challenge of deploying large machine learning models on the cloud—a key facet of modern MLOps. Summaries are stored in AWS DynamoDB, not only to optimize response times and resource usage but also to serve as a dataset for fine-tuning the deployed model. This approach allows for immediate retrieval of previously processed content and demonstrates an effective strategy for the dynamic improvement and cloud deployment of heavyweight ML models.
